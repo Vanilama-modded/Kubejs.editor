@@ -1,0 +1,149 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KubeJS Editor</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.34.1/min/vs/loader.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo-svg">
+                    <svg viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <rect width="36" height="36" rx="8" fill="#5865F2"/>
+                        <path d="M9 18L18 9L27 18L18 27L9 18Z" fill="#3B42A0" stroke="white" stroke-width="2"/>
+                        <path d="M9 18H27" stroke="white" stroke-width="2"/>
+                        <path d="M18 9V27" stroke="white" stroke-width="2"/>
+                        <path d="M13 14L18 19L23 14" stroke="white" stroke-width="1.5"/>
+                        <path d="M14 22H22" stroke="white" stroke-width="1.5"/>
+                        <circle cx="18" cy="18" r="2" fill="white"/>
+                    </svg>
+                </div>
+                <span>KubeJS Editor</span>
+            </div>
+            <div class="sidebar-content">
+                <div class="sidebar-section">
+                    <div class="sidebar-section-title">Templates</div>
+                    <div class="sidebar-item" data-template="startup">Startup Script</div>
+                    <div class="sidebar-item" data-template="server">Server Script</div>
+                    <div class="sidebar-item" data-template="client">Client Script</div>
+                </div>
+                <div class="sidebar-section">
+                    <div class="sidebar-section-title">Crafting Recipes</div>
+                    <div class="sidebar-item" data-template="craftingShapedRecipe">Shaped Crafting</div>
+                    <div class="sidebar-item" data-template="craftingShapelessRecipe">Shapeless Crafting</div>
+                    <div class="sidebar-item" data-template="smeltingRecipe">Smelting Recipe</div>
+                    <div class="sidebar-item" data-template="blastingRecipe">Blasting Recipe</div>
+                    <div class="sidebar-item" data-template="smokingRecipe">Smoking Recipe</div>
+                    <div class="sidebar-item" data-template="campfireCookingRecipe">Campfire Cooking</div>
+                    <div class="sidebar-item" data-template="stonecuttingRecipe">Stonecutting</div>
+                    <div class="sidebar-item" data-template="smithingRecipe">Smithing</div>
+                </div>
+                <div class="sidebar-section">
+                    <div class="sidebar-section-title">Recipe Management</div>
+                    <div class="sidebar-item" data-template="customRecipeRemoval">Recipe Removal</div>
+                </div>
+                <div class="sidebar-section">
+                    <div class="sidebar-section-title">Game Content</div>
+                    <div class="sidebar-item" data-template="lootTableModification">Loot Tables</div>
+                    <div class="sidebar-item" data-template="itemRegistration">Item Registration</div>
+                    <div class="sidebar-item" data-template="blockRegistration">Block Registration</div>
+                </div>
+                <div class="sidebar-section">
+                    <div class="sidebar-section-title">ProbeJS Addon</div>
+                    <div class="sidebar-item" data-template="probeJsBasic">Basic ProbeJS</div>
+                    <div class="sidebar-item" data-template="probeJsRecipeExplorer">Recipe Explorer</div>
+                </div>
+                <div class="sidebar-section">
+                    <div class="sidebar-section-title">Create Addon</div>
+                    <div class="sidebar-item" data-template="createMechanical">Mechanical Crafting</div>
+                    <div class="sidebar-item" data-template="createMixing">Mixing Recipes</div>
+                    <div class="sidebar-item" data-template="createSequencedAssembly">Sequenced Assembly</div>
+                    <div class="sidebar-item" data-template="createCompacting">Compacting</div>
+                    <div class="sidebar-item" data-template="createCutting">Cutting</div>
+                    <div class="sidebar-item" data-template="createFilling">Filling</div>
+                    <div class="sidebar-item" data-template="createItemApplication">Item Application</div>
+                </div>
+                <div class="sidebar-section">
+                    <div class="sidebar-section-title">Mekanism Addon</div>
+                    <div class="sidebar-item" data-template="mekanismGasProcessing">Gas Processing</div>
+                    <div class="sidebar-item" data-template="mekanismEnrichment">Enrichment</div>
+                    <div class="sidebar-item" data-template="mekanismReactors">Reactors</div>
+                </div>
+                <div class="sidebar-section">
+                    <div class="sidebar-section-title">Advanced Templates</div>
+                    <div class="sidebar-item" data-template="customEvent">Custom Events</div>
+                    <div class="sidebar-item" data-template="playerEvents">Player Events</div>
+                    <div class="sidebar-item" data-template="commandRegistration">Custom Commands</div>
+                    <div class="sidebar-item" data-template="worldGeneration">World Generation</div>
+                </div>
+            </div>
+        </div>
+        <div class="main-content">
+            <header>
+                <div class="logo">
+                    <div class="logo-svg">
+                        <svg viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <rect width="36" height="36" rx="8" fill="#5865F2"/>
+                            <path d="M9 18L18 9L27 18L18 27L9 18Z" fill="#3B42A0" stroke="white" stroke-width="2"/>
+                            <path d="M9 18H27" stroke="white" stroke-width="2"/>
+                            <path d="M18 9V27" stroke="white" stroke-width="2"/>
+                            <path d="M13 14L18 19L23 14" stroke="white" stroke-width="1.5"/>
+                            <path d="M14 22H22" stroke="white" stroke-width="1.5"/>
+                            <circle cx="18" cy="18" r="2" fill="white"/>
+                        </svg>
+                    </div>
+                    <h1>KubeJS Editor</h1>
+                </div>
+                <div class="search-container">
+                    <input type="text" id="templateSearch" placeholder="Search templates...">
+                    <div id="searchResults" class="search-results"></div>
+                </div>
+                <div class="actions">
+                    <button id="saveBtn">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+                            <polyline points="17 21 17 13 7 13 7 21"></polyline>
+                            <polyline points="7 3 7 8 15 8"></polyline>
+                        </svg>
+                        Save
+                    </button>
+                    <button id="loadBtn">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="17 8 12 3 7 8"></polyline>
+                            <line x1="12" y1="3" x2="12" y2="15"></line>
+                        </svg>
+                        Load
+                    </button>
+                    <button id="helpBtn">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+                            <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                        </svg>
+                        Help
+                    </button>
+                </div>
+            </header>
+            <main>
+                <div id="editor-container"></div>
+            </main>
+            <footer>
+                <div class="status">
+                    <span id="status-message">Ready</span>
+                </div>
+                <div class="info">
+                    <span>KubeJS Editor v1.0.0</span>
+                </div>
+            </footer>
+        </div>
+    </div>
+    <script type="module" src="config.js"></script>
+    <script type="module" src="kubejs-definitions.js"></script>
+    <script type="module" src="main.js"></script>
+</body>
+</html>
