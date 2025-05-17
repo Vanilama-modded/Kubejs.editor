@@ -204,6 +204,98 @@ function initEditor() {
     });
 }
 
+// Search functionality
+function initializeSearch() {
+    const searchInput = document.getElementById('templateSearch');
+    const searchResults = document.getElementById('searchResults');
+    
+    function getTemplateCategories() {
+        const categories = {};
+        document.querySelectorAll('.sidebar-section').forEach(section => {
+            const title = section.querySelector('.sidebar-section-title').textContent;
+            const items = Array.from(section.querySelectorAll('.sidebar-item')).map(item => ({
+                name: item.textContent,
+                template: item.getAttribute('data-template')
+            }));
+            categories[title] = items;
+        });
+        return categories;
+    }
+    
+    function showSearchResults(results) {
+        searchResults.innerHTML = '';
+        if (results.length === 0) {
+            searchResults.style.display = 'none';
+            return;
+        }
+        
+        let currentCategory = '';
+        results.forEach(result => {
+            if (result.category !== currentCategory) {
+                currentCategory = result.category;
+                const categoryEl = document.createElement('div');
+                categoryEl.className = 'search-result-category';
+                categoryEl.textContent = currentCategory;
+                searchResults.appendChild(categoryEl);
+            }
+            
+            const itemEl = document.createElement('div');
+            itemEl.className = 'search-result-item';
+            itemEl.textContent = result.name;
+            itemEl.addEventListener('click', () => {
+                loadTemplate(result.template);
+                searchResults.style.display = 'none';
+                searchInput.value = '';
+            });
+            searchResults.appendChild(itemEl);
+        });
+        
+        searchResults.style.display = 'block';
+    }
+    
+    function performSearch(query) {
+        const categories = getTemplateCategories();
+        const results = [];
+        
+        Object.entries(categories).forEach(([category, items]) => {
+            items.forEach(item => {
+                if (item.name.toLowerCase().includes(query.toLowerCase())) {
+                    results.push({
+                        category,
+                        name: item.name,
+                        template: item.template
+                    });
+                }
+            });
+        });
+        
+        showSearchResults(results);
+    }
+    
+    // Search input event handlers
+    searchInput.addEventListener('input', (e) => {
+        const query = e.target.value.trim();
+        if (query.length >= 2) {
+            performSearch(query);
+        } else {
+            searchResults.style.display = 'none';
+        }
+    });
+    
+    searchInput.addEventListener('focus', () => {
+        if (searchInput.value.trim().length >= 2) {
+            performSearch(searchInput.value.trim());
+        }
+    });
+    
+    // Close search results when clicking outside
+    document.addEventListener('click', (e) => {
+        if (!searchInput.contains(e.target) && !searchResults.contains(e.target)) {
+            searchResults.style.display = 'none';
+        }
+    });
+}
+
 // Set status message
 function setStatus(message, isError = false) {
     const statusEl = document.getElementById('status-message');
@@ -271,46 +363,70 @@ function loadTemplate(templateName) {
 // Get KubeJS documentation URL based on template or content
 function getDocumentationUrl() {
     // Default documentation URL
-    let baseUrl = 'https://kubejs.com/wiki/';
+    let baseUrl = 'https://wiki.latvian.dev/books/kubejs/';
     
     // Check if we have a template selected
     const templateSelect = document.getElementById('templateSelect');
-    const selectedValue = templateSelect.value;
+    const selectedValue = templateSelect?.value;
     
-    if (selectedValue) {
-        // Map template types to specific wiki pages
-        const urlMap = {
-            'startup': 'startup-scripts',
-            'server': 'server-scripts',
-            'client': 'client-scripts',
-            'craftingShapedRecipe': 'recipes/shaped',
-            'craftingShapelessRecipe': 'recipes/shapeless',
-            'smeltingRecipe': 'recipes/smelting',
-            'blastingRecipe': 'recipes/blasting',
-            'smokingRecipe': 'recipes/smoking',
-            'campfireCookingRecipe': 'recipes/campfire',
-            'stonecuttingRecipe': 'recipes/stonecutting',
-            'smithingRecipe': 'recipes/smithing',
-            'customRecipeRemoval': 'recipes/removal',
-            'lootTableModification': 'loot-tables',
-            'itemRegistration': 'registry/item',
-            'blockRegistration': 'registry/block'
-        };
-        
-        if (urlMap[selectedValue]) {
-            return baseUrl + urlMap[selectedValue];
-        }
-    }
-    
-    // If no specific template is selected, try to determine from content
+    // Get content to determine what type of script we're working with
     const content = editor?.getValue() || '';
     
+    // Map template names to specific wiki pages
+    const urlMap = {
+        'startup': 'startup.html',
+        'server': 'server.html',
+        'client': 'client.html',
+        'craftingShapedRecipe': 'recipes/shaped.html',
+        'craftingShapelessRecipe': 'recipes/shapeless.html',
+        'smeltingRecipe': 'recipes/smelting.html',
+        'blastingRecipe': 'recipes/blasting.html',
+        'smokingRecipe': 'recipes/smoking.html',
+        'campfireCookingRecipe': 'recipes/campfire.html',
+        'stonecuttingRecipe': 'recipes/stonecutting.html',
+        'smithingRecipe': 'recipes/smithing.html',
+        'customRecipeRemoval': 'recipes/removal.html',
+        'lootTableModification': 'loot-tables.html',
+        'itemRegistration': 'registry/item.html',
+        'blockRegistration': 'registry/block.html',
+        'probeJsBasic': 'https://github.com/Prunoideae/ProbeJS',
+        'probeJsRecipeExplorer': 'https://github.com/Prunoideae/ProbeJS',
+        'createMechanical': 'https://github.com/AlmostReliable/kubejs-creates',
+        'createMixing': 'https://github.com/AlmostReliable/kubejs-creates',
+        'createSequencedAssembly': 'https://github.com/AlmostReliable/kubejs-creates',
+        'mekanismGasProcessing': 'https://github.com/KubeJS-Mods/KubeJS-Mekanism',
+        'mekanismEnrichment': 'https://github.com/KubeJS-Mods/KubeJS-Mekanism',
+        'mekanismReactors': 'https://github.com/KubeJS-Mods/KubeJS-Mekanism',
+        'customEvent': 'custom-events.html',
+        'playerEvents': 'player-events.html',
+        'commandRegistration': 'custom-commands.html',
+        'worldGeneration': 'worldgen.html'
+    };
+    
+    // Try to determine the current template
+    const activeItem = document.querySelector('.sidebar-item.active');
+    const activeTemplate = activeItem ? activeItem.getAttribute('data-template') : null;
+    
+    // Prioritize active template, then selected value, then content analysis
+    if (activeTemplate && urlMap[activeTemplate]) {
+        return baseUrl + urlMap[activeTemplate];
+    } else if (selectedValue && urlMap[selectedValue]) {
+        return baseUrl + urlMap[selectedValue];
+    }
+    
+    // Content analysis fallback
     if (content.includes('ServerEvents.recipes')) {
-        return baseUrl + 'recipes';
+        return baseUrl + 'recipes.html';
     } else if (content.includes('StartupEvents.registry')) {
-        return baseUrl + 'registry';
+        return baseUrl + 'registry.html';
     } else if (content.includes('ClientEvents')) {
-        return baseUrl + 'client-scripts';
+        return baseUrl + 'client.html';
+    } else if (content.includes('ProbeJS') || content.includes('Recipe.getRecipes()')) {
+        return 'https://github.com/Prunoideae/ProbeJS';
+    } else if (content.includes('createMechanicalCrafting') || content.includes('createMixing')) {
+        return 'https://github.com/AlmostReliable/kubejs-creates';
+    } else if (content.includes('mekanism') || content.includes('mekanismEnriching')) {
+        return 'https://github.com/KubeJS-Mods/KubeJS-Mekanism';
     }
     
     // Default to main documentation page
@@ -324,10 +440,125 @@ function openDocumentation() {
     setStatus(`Opening documentation: ${url}`);
 }
 
+// Handle responsive layout based on device aspect ratio
+function setupResponsiveLayout() {
+    // Initial adjustment
+    adjustLayoutForAspectRatio();
+    
+    // Listen for window resize events
+    window.addEventListener('resize', () => {
+        adjustLayoutForAspectRatio();
+        if (editor) editor.layout();
+    });
+}
+
+// Adjust layout based on current aspect ratio
+function adjustLayoutForAspectRatio() {
+    const aspectRatio = window.innerWidth / window.innerHeight;
+    const container = document.querySelector('.container');
+    const sidebar = document.querySelector('.sidebar');
+    const mainContent = document.querySelector('.main-content');
+    
+    // Wide screen (landscape)
+    if (aspectRatio > 1.5) {
+        container.style.flexDirection = 'row';
+        sidebar.style.width = 'var(--sidebar-width)';
+        sidebar.style.height = '100%';
+        mainContent.style.width = `calc(100% - var(--sidebar-width))`;
+        mainContent.style.height = '100%';
+        document.documentElement.style.setProperty('--sidebar-width', '240px');
+    } 
+    // Square-ish screen
+    else if (aspectRatio >= 0.8 && aspectRatio <= 1.5) {
+        container.style.flexDirection = 'row';
+        document.documentElement.style.setProperty('--sidebar-width', '200px');
+        sidebar.style.width = 'var(--sidebar-width)';
+        sidebar.style.height = '100%';
+        mainContent.style.width = `calc(100% - var(--sidebar-width))`;
+        mainContent.style.height = '100%';
+    } 
+    // Narrow screen (portrait)
+    else {
+        document.documentElement.style.setProperty('--sidebar-width', '180px');
+        sidebar.style.width = 'var(--sidebar-width)';
+        
+        // Ultra-narrow screen - stack vertically
+        if (aspectRatio < 0.6) {
+            container.style.flexDirection = 'column';
+            sidebar.style.width = '100%';
+            sidebar.style.height = '35%';
+            mainContent.style.width = '100%';
+            mainContent.style.height = '65%';
+            
+            // Adjust header for smaller width
+            document.documentElement.style.setProperty('--header-height', '40px');
+            
+            // Make sidebar sections side-scrollable
+            const sidebarSections = document.querySelectorAll('.sidebar-section');
+            sidebarSections.forEach(section => {
+                section.style.display = 'flex';
+                section.style.overflowX = 'auto';
+                section.style.flexWrap = 'nowrap';
+                section.style.margin = '8px 0';
+            });
+            
+            // Make sidebar items more compact
+            const sidebarItems = document.querySelectorAll('.sidebar-item');
+            sidebarItems.forEach(item => {
+                item.style.whiteSpace = 'nowrap';
+                item.style.margin = '0 4px';
+                item.style.flex = '0 0 auto';
+            });
+        } else {
+            container.style.flexDirection = 'row';
+            sidebar.style.height = '100%';
+            mainContent.style.width = `calc(100% - var(--sidebar-width))`;
+            mainContent.style.height = '100%';
+            
+            // Reset header height
+            document.documentElement.style.setProperty('--header-height', '48px');
+            
+            // Reset sidebar layout
+            const sidebarSections = document.querySelectorAll('.sidebar-section');
+            sidebarSections.forEach(section => {
+                section.style.display = 'block';
+                section.style.overflowX = 'visible';
+                section.style.flexWrap = 'unset';
+                section.style.margin = '16px 0';
+            });
+            
+            // Reset sidebar items
+            const sidebarItems = document.querySelectorAll('.sidebar-item');
+            sidebarItems.forEach(item => {
+                item.style.whiteSpace = 'normal';
+                item.style.margin = '2px 0';
+                item.style.flex = 'unset';
+            });
+        }
+    }
+    
+    // Adjust font size based on screen width
+    const baseFontSize = Math.max(12, Math.min(16, window.innerWidth / 80));
+    document.documentElement.style.fontSize = `${baseFontSize}px`;
+    
+    // Adjust editor if it exists
+    if (editor) {
+        editor.updateOptions({
+            fontSize: Math.max(12, Math.min(16, window.innerWidth / 100))
+        });
+    }
+}
+
 // Initialize the application
 document.addEventListener('DOMContentLoaded', () => {
     // Initialize editor
     initEditor();
+    
+    // Initialize search functionality
+    initializeSearch();
+    
+    // Add responsive layout handling
+    setupResponsiveLayout();
     
     // Add event listeners
     document.getElementById('saveBtn').addEventListener('click', saveFile);

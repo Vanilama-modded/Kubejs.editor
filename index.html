@@ -52,6 +52,36 @@
                     <div class="sidebar-item" data-template="itemRegistration">Item Registration</div>
                     <div class="sidebar-item" data-template="blockRegistration">Block Registration</div>
                 </div>
+                <div class="sidebar-section">
+                    <div class="sidebar-section-title">ProbeJS Addon</div>
+                    <div class="sidebar-item" data-template="probeJsBasic">Basic ProbeJS</div>
+                    <div class="sidebar-item" data-template="probeJsRecipeExplorer">Recipe Explorer</div>
+                </div>
+                <div class="sidebar-section">
+                    <div class="sidebar-section-title">Create Addon</div>
+                    <div class="sidebar-item" data-template="createMechanical">Mechanical Crafting</div>
+                    <div class="sidebar-item" data-template="createMixing">Mixing Recipes</div>
+                    <div class="sidebar-item" data-template="createSequencedAssembly">Sequenced Assembly</div>
+                    <div class="sidebar-item" data-template="createCompacting">Compacting</div>
+                    <div class="sidebar-item" data-template="createCrushing">Crushing</div>
+                    <div class="sidebar-item" data-template="createMilling">Milling</div>
+                    <div class="sidebar-item" data-template="createCutting">Cutting</div>
+                    <div class="sidebar-item" data-template="createFilling">Filling</div>
+                    <div class="sidebar-item" data-template="createItemApplication">Item Application</div>
+                </div>
+                <div class="sidebar-section">
+                    <div class="sidebar-section-title">Mekanism Addon</div>
+                    <div class="sidebar-item" data-template="mekanismGasProcessing">Gas Processing</div>
+                    <div class="sidebar-item" data-template="mekanismEnrichment">Enrichment</div>
+                    <div class="sidebar-item" data-template="mekanismReactors">Reactors</div>
+                </div>
+                <div class="sidebar-section">
+                    <div class="sidebar-section-title">Advanced Templates</div>
+                    <div class="sidebar-item" data-template="customEvent">Custom Events</div>
+                    <div class="sidebar-item" data-template="playerEvents">Player Events</div>
+                    <div class="sidebar-item" data-template="commandRegistration">Custom Commands</div>
+                    <div class="sidebar-item" data-template="worldGeneration">World Generation</div>
+                </div>
             </div>
         </div>
         <div class="main-content">
@@ -69,6 +99,10 @@
                         </svg>
                     </div>
                     <h1>KubeJS Editor</h1>
+                </div>
+                <div class="search-container">
+                    <input type="text" id="templateSearch" placeholder="Search templates...">
+                    <div id="searchResults" class="search-results"></div>
                 </div>
                 <div class="actions">
                     <button id="saveBtn">
